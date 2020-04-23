@@ -1,0 +1,14 @@
+{
+    "name": "UniSharper.Data.SaveGame",
+    "references": [
+        "UniSharper.Core"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

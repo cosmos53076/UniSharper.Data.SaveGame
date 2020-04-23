@@ -1,12 +1,16 @@
 {
-	"name": "com.github.cosmos53076.unisharper.data.savegame",
+	"name": "io.github.idreamsofgame.unisharper.data.savegame",
 	"displayName": "UniSharper.Data.SaveGame",
 	"description": "UniSharper.Data.SaveGame is a save game system for saving and loading game data in Unity Engine.",
 	"version": "1.0.0",
 	"unity": "2018.3",
+	"author": {
+		"name": "iDreamsOfGame",
+		"url": "https://github.com/iDreamsOfGame"
+	},
 	"license": "MIT",
 	"dependencies": 
 	{
-		"com.github.cosmos53076.resharp.core": "1.0.1"
+		"io.github.idreamsofgame.unisharper.core": "1.1.0"
 	}
 }

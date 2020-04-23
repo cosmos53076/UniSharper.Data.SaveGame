@@ -1,5 +1,5 @@
-﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License. See LICENSE in the
-// project root for license information.
+﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
+// See LICENSE in the project root for license information.
 
 using System;
 using System.IO;
@@ -15,11 +15,11 @@ namespace UniSharper.Data.SaveGame
     {
         #region Fields
 
-        private static readonly Encoding defaultEncoding = Encoding.UTF8;
+        private static readonly Encoding DefaultEncoding = Encoding.UTF8;
 
-        private static readonly string editorDefaultStorePath = PathUtility.UnifyToAltDirectorySeparatorChar(PathUtility.Combine(Directory.GetCurrentDirectory(), "Saves"));
+        private static readonly string EditorDefaultStorePath = PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(Directory.GetCurrentDirectory(), "Saves"));
 
-        private static readonly string runtimeDefaultStorePath = PathUtility.UnifyToAltDirectorySeparatorChar(PathUtility.Combine(Application.persistentDataPath, "saves"));
+        private static readonly string RuntimeDefaultStorePath = PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(Application.persistentDataPath, "saves"));
 
         #endregion Fields
 
@@ -32,30 +32,10 @@ namespace UniSharper.Data.SaveGame
         /// <param name="cryptoProvider">The encryption provider.</param>
         public SaveGameManager(string storePath = null, ISaveGameCryptoProvider cryptoProvider = null)
         {
-            if (!string.IsNullOrEmpty(storePath))
-            {
-                StorePath = storePath;
-            }
-            else
-            {
-                if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.OSXEditor || Application.platform == RuntimePlatform.LinuxEditor)
-                {
-                    StorePath = editorDefaultStorePath;
-                }
-                else
-                {
-                    StorePath = runtimeDefaultStorePath;
-                }
-            }
+            StorePath = !string.IsNullOrEmpty(storePath) ? storePath :
+                PlayerEnvironment.IsEditorPlatform ? EditorDefaultStorePath : RuntimeDefaultStorePath;
 
-            if (cryptoProvider != null)
-            {
-                CryptoProvider = cryptoProvider;
-            }
-            else
-            {
-                CryptoProvider = new SaveGameCryptoProvider();
-            }
+            CryptoProvider = cryptoProvider ?? new SaveGameCryptoProvider();
         }
 
         #endregion Constructors
@@ -69,7 +49,6 @@ namespace UniSharper.Data.SaveGame
         public ISaveGameCryptoProvider CryptoProvider
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -79,7 +58,6 @@ namespace UniSharper.Data.SaveGame
         public string StorePath
         {
             get;
-            private set;
         }
 
         #endregion Properties
@@ -106,7 +84,7 @@ namespace UniSharper.Data.SaveGame
         /// <returns>The game data of <see cref="System.String"/> from file.</returns>
         public string LoadGame(string name, bool decrypt = true)
         {
-            return defaultEncoding.GetString(LoadGameData(name, decrypt));
+            return DefaultEncoding.GetString(LoadGameData(name, decrypt));
         }
 
         /// <summary>
@@ -117,9 +95,9 @@ namespace UniSharper.Data.SaveGame
         /// <returns>The raw data of game from file.</returns>
         public byte[] LoadGameData(string name, bool decrypt = true)
         {
-            string filePath = GetFilePath(name);
-            byte[] fileData = File.ReadAllBytes(filePath);
-            byte[] data = fileData;
+            var filePath = GetFilePath(name);
+            var fileData = File.ReadAllBytes(filePath);
+            var data = fileData;
 
             if (decrypt && CryptoProvider.Key != null)
             {
@@ -153,7 +131,7 @@ namespace UniSharper.Data.SaveGame
         /// </param>
         public void SaveGame(string name, string data, bool encrypt = true)
         {
-            byte[] rawData = defaultEncoding.GetBytes(data);
+            byte[] rawData = DefaultEncoding.GetBytes(data);
             SaveGameData(name, rawData, encrypt);
         }
 
@@ -176,14 +154,14 @@ namespace UniSharper.Data.SaveGame
                 throw new ArgumentNullException(nameof(data));
             }
 
-            byte[] fileData = data;
+            var fileData = data;
 
             if (encrypt && CryptoProvider.Key != null)
             {
                 fileData = CryptoProvider.Encrypt(data);
             }
 
-            string filePath = GetFilePath(name, true);
+            var filePath = GetFilePath(name, true);
             File.WriteAllBytes(filePath, fileData);
         }
 
@@ -202,11 +180,11 @@ namespace UniSharper.Data.SaveGame
         /// </returns>
         public bool TryLoadGame(string name, out string data, bool decrypt = true)
         {
-            bool result = TryLoadGameData(name, out byte[] rawData, decrypt);
+            var result = TryLoadGameData(name, out byte[] rawData, decrypt);
 
             if (result && rawData != null)
             {
-                data = defaultEncoding.GetString(rawData);
+                data = DefaultEncoding.GetString(rawData);
             }
             else
             {
@@ -230,7 +208,7 @@ namespace UniSharper.Data.SaveGame
         {
             if (SaveDataExists(name))
             {
-                string filePath = GetFilePath(name);
+                var filePath = GetFilePath(name);
                 data = LoadGameData(name, decrypt);
                 return true;
             }
@@ -246,7 +224,7 @@ namespace UniSharper.Data.SaveGame
                 Directory.CreateDirectory(StorePath);
             }
 
-            return PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(StorePath, string.Format("{0}.sav", name)));
+            return PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(StorePath, $"{name}.sav"));
         }
 
         #endregion Methods

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License. See LICENSE in the
-// project root for license information.
+﻿// Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
+// See LICENSE in the project root for license information.
 
 using ReSharp.Security.Cryptography;
 using System.Text;
@@ -21,14 +21,7 @@ namespace UniSharper.Data.SaveGame
         /// <param name="key">The key for encryption.</param>
         public SaveGameCryptoProvider(byte[] key = null)
         {
-            if (key != null && key.Length > 0)
-            {
-                Key = key;
-            }
-            else
-            {
-                Key = CryptoUtility.GenerateRandomKey(32, true, true, true, false);
-            }
+            Key = key != null && key.Length > 0 ? key : CryptoUtility.GenerateRandomKey(32, true, true, true, false);
         }
 
         #endregion Constructors
@@ -39,11 +32,7 @@ namespace UniSharper.Data.SaveGame
         /// Gets or sets the key to be used for the encryption algorithm.
         /// </summary>
         /// <value>The key to be used for the encryption algorithm.</value>
-        public byte[] Key
-        {
-            get;
-            set;
-        }
+        public byte[] Key { get; set; }
 
         /// <summary>
         /// Gets the key string to be used for the encryption algorithm.
@@ -60,20 +49,14 @@ namespace UniSharper.Data.SaveGame
         /// </summary>
         /// <param name="data">The data to be decrypted.</param>
         /// <returns>The decrypted data.</returns>
-        public byte[] Decrypt(byte[] data)
-        {
-            return CryptoUtility.AesDecrypt(data, Key);
-        }
+        public byte[] Decrypt(byte[] data) => CryptoUtility.AesDecrypt(data, Key);
 
         /// <summary>
         /// Encrypts data.
         /// </summary>
         /// <param name="data">The data to encrypt.</param>
         /// <returns>The encrypted data.</returns>
-        public byte[] Encrypt(byte[] data)
-        {
-            return CryptoUtility.AesEncrypt(data, Key);
-        }
+        public byte[] Encrypt(byte[] data) => CryptoUtility.AesEncrypt(data, Key);
 
         #endregion Methods
     }
