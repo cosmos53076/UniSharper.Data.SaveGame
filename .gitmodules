@@ -1,4 +1,4 @@
 [submodule "upm"]
 	path = Assets/UniSharper.Data.SaveGame
-	url = https://github.com/iDreamsOfGAme/UniSharper.Data.SaveGame.git
+	url = https://github.com/iDreamsOfGame/UniSharper.Data.SaveGame.git
 	branch = upm
