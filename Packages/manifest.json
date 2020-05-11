@@ -38,7 +38,6 @@
       "name": "package.openupm.com",
       "url": "https://package.openupm.com",
       "scopes": [
-        "com.github.jillejr.newtonsoft.json.unity",
         "com.openupm",
         "io.github.idreamsofgame.resharp.core",
         "io.github.idreamsofgame.unisharper.core",
