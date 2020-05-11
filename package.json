@@ -11,6 +11,6 @@
 	"license": "MIT",
 	"dependencies": 
 	{
-		"io.github.idreamsofgame.unisharper.core": "1.1.0"
+		"io.github.idreamsofgame.unisharper.core": "1.4.1"
 	}
 }
