@@ -1,10 +1,7 @@
 {
-    "name": "UniSharper.Data.SaveGame.Examples",
+    "name": "UniSharper.Data.SaveGame",
     "references": [
-        "UniSharper.Data.SaveGame"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "Unity.UniSharper"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -12,5 +9,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
