@@ -2,7 +2,7 @@
   "name": "io.github.idreamsofgame.unisharper.data.savegame",
   "displayName": "UniSharper.Data.SaveGame",
   "description": "UniSharper.Data.SaveGame is a save game system for saving and loading game data in Unity Engine.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "unity": "2018.3",
   "author": {
     "name": "iDreamsOfGame",

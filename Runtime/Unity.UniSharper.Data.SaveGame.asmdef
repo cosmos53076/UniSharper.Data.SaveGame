@@ -1,5 +1,5 @@
 {
-    "name": "UniSharper.Data.SaveGame",
+    "name": "Unity.UniSharper.Data.SaveGame",
     "references": [
         "Unity.UniSharper"
     ],

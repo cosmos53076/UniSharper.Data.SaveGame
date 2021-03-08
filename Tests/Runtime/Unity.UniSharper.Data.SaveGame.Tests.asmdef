@@ -1,9 +1,9 @@
 {
-    "name": "UniSharper.Data.SaveGame.Examples",
+    "name": "Unity.UniSharper.Data.SaveGame.Examples",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "UniSharper.Data.SaveGame"
+        "Unity.UniSharper.Data.SaveGame"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
