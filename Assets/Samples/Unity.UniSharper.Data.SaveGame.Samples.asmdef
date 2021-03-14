@@ -1,0 +1,17 @@
+{
+    "name": "Unity.UniSharper.Data.SaveGame.Samples",
+    "references": [
+        "Unity.UniSharper.Data.SaveGame"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
