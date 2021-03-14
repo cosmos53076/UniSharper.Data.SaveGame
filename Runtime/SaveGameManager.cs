@@ -46,19 +46,13 @@ namespace UniSharper.Data.SaveGame
         /// Gets the encryption provider.
         /// </summary>
         /// <value>The encryption provider.</value>
-        public ISaveGameCryptoProvider CryptoProvider
-        {
-            get;
-        }
+        public ISaveGameCryptoProvider CryptoProvider { get; }
 
         /// <summary>
         /// Gets the store path where data to save.
         /// </summary>
         /// <value>The store path where data to save.</value>
-        public string StorePath
-        {
-            get;
-        }
+        public string StorePath { get; }
 
         #endregion Properties
 
@@ -82,10 +76,7 @@ namespace UniSharper.Data.SaveGame
         /// <param name="name">The name of save data.</param>
         /// <param name="decrypt">if set to <c>true</c> [decrypts the file data].</param>
         /// <returns>The game data of <see cref="System.String"/> from file.</returns>
-        public string LoadGame(string name, bool decrypt = true)
-        {
-            return DefaultEncoding.GetString(LoadGameData(name, decrypt));
-        }
+        public string LoadGame(string name, bool decrypt = true) => DefaultEncoding.GetString(LoadGameData(name, decrypt));
 
         /// <summary>
         /// Loads the raw data of game.
@@ -208,7 +199,6 @@ namespace UniSharper.Data.SaveGame
         {
             if (SaveDataExists(name))
             {
-                var filePath = GetFilePath(name);
                 data = LoadGameData(name, decrypt);
                 return true;
             }

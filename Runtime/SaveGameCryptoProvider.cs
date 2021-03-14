@@ -19,10 +19,7 @@ namespace UniSharper.Data.SaveGame
         /// Initializes a new instance of the <see cref="SaveGameCryptoProvider"/> class.
         /// </summary>
         /// <param name="key">The key for encryption.</param>
-        public SaveGameCryptoProvider(byte[] key = null)
-        {
-            Key = key != null && key.Length > 0 ? key : CryptoUtility.GenerateRandomKey(32, true, true, true, false);
-        }
+        public SaveGameCryptoProvider(byte[] key = null) => Key = key != null && key.Length > 0 ? key : CryptoUtility.GenerateRandomKey(32, true, true, true, false);
 
         #endregion Constructors
 
