@@ -8,37 +8,23 @@ namespace UniSharper.Data.SaveGame
     /// </summary>
     public interface ISaveGameCryptoProvider
     {
-        #region Properties
-
-        /// <summary>
-        /// Gets or sets the key to be used for the encryption algorithm.
-        /// </summary>
-        /// <value>The key to be used for the encryption algorithm.</value>
-        byte[] Key { get; set; }
-
-        /// <summary>
-        /// Gets the key string to be used for the encryption algorithm.
-        /// </summary>
-        /// <value>The key string to be used for the encryption algorithm.</value>
-        string KeyString { get; }
-
-        #endregion Properties
-
         #region Methods
 
         /// <summary>
         /// Decrypts data.
         /// </summary>
         /// <param name="data">The data to be decrypted.</param>
+        /// <param name="key">The key to be used for the decryption algorithm.</param>
         /// <returns>The decrypted data.</returns>
-        byte[] Decrypt(byte[] data);
+        byte[] Decrypt(byte[] data, byte[] key);
 
         /// <summary>
         /// Encrypts data.
         /// </summary>
         /// <param name="data">The data to encrypt.</param>
+        /// <param name="key">The key to be used for the encryption algorithm.</param>
         /// <returns>The encrypted data.</returns>
-        byte[] Encrypt(byte[] data);
+        byte[] Encrypt(byte[] data, byte[] key);
 
         #endregion Methods
     }
