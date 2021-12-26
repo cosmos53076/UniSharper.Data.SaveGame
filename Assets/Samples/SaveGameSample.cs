@@ -34,14 +34,14 @@ namespace UniSharper.Data.SaveGame.Samples
             if (!string.IsNullOrEmpty(inputFiled.text))
             {
                 manager.SaveGame(GameDataName, inputFiled.text);
+                inputFiled.text = string.Empty;
             }
         }
 
         private void Awake()
         {
-            manager = new SaveGameManager(null, new SaveGameCryptoProvider(Encoding.UTF8.GetBytes(Key)));
+            manager = new SaveGameManager(null, new SaveGameCryptoProvider());
             loadGameButton.interactable = manager.SaveDataExists(GameDataName);
-            LoadGame();
         }
 
         private void LoadGame()
