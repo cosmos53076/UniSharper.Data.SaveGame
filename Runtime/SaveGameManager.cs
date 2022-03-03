@@ -191,7 +191,7 @@ namespace UniSharper.Data.SaveGame
                 if (!fileStreamMap.TryGetValue(name, out var fileStream))
                 {
                     var filePath = GetFilePath(name, true);
-                    fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+                    fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write);
                     fileStreamMap.Add(name, fileStream);
                 }
 
