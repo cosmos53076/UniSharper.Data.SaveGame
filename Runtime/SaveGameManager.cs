@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using ReSharp.Extensions;
 using ReSharp.Security.Cryptography;
 using UnityEngine;
 // ReSharper disable RedundantArgumentDefaultValue
@@ -16,8 +17,6 @@ namespace UniSharper.Data.SaveGame
     /// </summary>
     public sealed class SaveGameManager : IDisposable
     {
-        #region Fields
-
         private const int EncryptionKeyLength = 16;
 
         public static readonly Encoding DefaultEncoding = Encoding.UTF8;
@@ -27,10 +26,6 @@ namespace UniSharper.Data.SaveGame
         private static readonly string RuntimeDefaultStorePath = PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(Application.persistentDataPath, "saves"));
 
         private Dictionary<string, FileStream> fileStreamMap;
-
-        #endregion Fields
-
-        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SaveGameManager"/> class.
@@ -47,10 +42,6 @@ namespace UniSharper.Data.SaveGame
             CryptoProvider = cryptoProvider ?? new SaveGameCryptoProvider();
         }
 
-        #endregion Constructors
-
-        #region Properties
-
         /// <summary>
         /// Gets the encryption provider.
         /// </summary>
@@ -62,10 +53,6 @@ namespace UniSharper.Data.SaveGame
         /// </summary>
         /// <value>The store path where data to save.</value>
         public string StorePath { get; }
-
-        #endregion Properties
-
-        #region Methods
 
         /// <summary>
         /// Deletes the save data.
@@ -236,16 +223,7 @@ namespace UniSharper.Data.SaveGame
         public bool TryLoadGame(string name, out string data)
         {
             var result = TryLoadGameData(name, out var rawData);
-
-            if (result && rawData != null)
-            {
-                data = DefaultEncoding.GetString(rawData);
-            }
-            else
-            {
-                data = null;
-            }
-
+            data = result && rawData != null ? DefaultEncoding.GetString(rawData) : null;
             return result;
         }
 
@@ -306,7 +284,5 @@ namespace UniSharper.Data.SaveGame
 
             fileStreamMap = null;
         }
-
-        #endregion Methods
     }
 }
