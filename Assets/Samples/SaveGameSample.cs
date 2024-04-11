@@ -1,5 +1,4 @@
-﻿using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace UniSharper.Data.SaveGame.Samples
@@ -13,12 +12,12 @@ namespace UniSharper.Data.SaveGame.Samples
         private const string Key = "SAnzX2EoRV9Haaqc";
 
         [SerializeField]
-        private InputField inputFiled = null;
+        private InputField inputFiled;
 
         [SerializeField]
-        private Button loadGameButton = null;
+        private Button loadGameButton;
 
-        private SaveGameManager manager = null;
+        private ISaveGameManager manager;
 
         #endregion Fields
 
@@ -40,8 +39,9 @@ namespace UniSharper.Data.SaveGame.Samples
 
         private void Awake()
         {
-            manager = new SaveGameManager(null, new SaveGameCryptoProvider());
-            loadGameButton.interactable = manager.SaveDataExists(GameDataName);
+            manager = new SaveGameManager();
+            manager.Initialize(null, new SaveGameDataCryptoProvider());
+            loadGameButton.interactable = manager.ExistsSaveData(GameDataName);
         }
 
         private void LoadGame()
