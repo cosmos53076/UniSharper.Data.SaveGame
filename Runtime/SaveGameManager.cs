@@ -119,19 +119,21 @@ namespace UniSharper.Data.SaveGame
                 Debug.LogWarning($"Can not load save game, exception: {e}");
                 return null;
             }
-            
-            using var reader = new BinaryReader(new MemoryStream(fileData));
-            var dataEncryptionFlagRawData = reader.ReadBytes(1);
-            var dataEncryptionFlag = BitConverter.ToBoolean(dataEncryptionFlagRawData, 0);
 
-            // No data encryption.
-            if (!dataEncryptionFlag) 
-                return reader.ReadBytes(fileData.Length - dataEncryptionFlagRawData.Length);
-            
-            // Need data decryption.
-            var key = reader.ReadBytes(EncryptionKeyLength);
-            var cipherData = reader.ReadBytes(fileData.Length - dataEncryptionFlagRawData.Length - EncryptionKeyLength);
-            return SaveGameDataCryptoProvider?.Decrypt(cipherData, key);
+            using (var reader = new BinaryReader(new MemoryStream(fileData)))
+            {
+                var dataEncryptionFlagRawData = reader.ReadBytes(1);
+                var dataEncryptionFlag = BitConverter.ToBoolean(dataEncryptionFlagRawData, 0);
+
+                // No data encryption.
+                if (!dataEncryptionFlag)
+                    return reader.ReadBytes(fileData.Length - dataEncryptionFlagRawData.Length);
+
+                // Need data decryption.
+                var key = reader.ReadBytes(EncryptionKeyLength);
+                var cipherData = reader.ReadBytes(fileData.Length - dataEncryptionFlagRawData.Length - EncryptionKeyLength);
+                return SaveGameDataCryptoProvider?.Decrypt(cipherData, key);
+            }
         }
         
         public virtual void SaveGame(string name, string data, bool encrypt = true)
