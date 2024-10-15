@@ -6,7 +6,10 @@ using System.IO.Compression;
 
 namespace UniSharper.Data.SaveGame
 {
-    internal class DefaultCompressionProvider : ICompressionProvider
+    /// <summary>
+    /// Default implementation of <see cref="ICompressionProvider"/>.
+    /// </summary>
+    public class DefaultCompressionProvider : ICompressionProvider
     {
         public byte[] Compress(byte[] input)
         {
