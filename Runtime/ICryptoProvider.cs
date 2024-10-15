@@ -4,9 +4,9 @@
 namespace UniSharper.Data.SaveGame
 {
     /// <summary>
-    /// Provides the methods for encrypting/decrypting the save game data.
+    /// Provides the methods for encrypting and decrypting the save game data.
     /// </summary>
-    public interface ISaveGameDataCryptoProvider
+    public interface ICryptoProvider
     {
         /// <summary>
         /// Encrypts data.
@@ -15,7 +15,7 @@ namespace UniSharper.Data.SaveGame
         /// <param name="key">The key to be used for the encryption algorithm.</param>
         /// <returns>The encrypted data.</returns>
         byte[] Encrypt(byte[] data, byte[] key);
-        
+
         /// <summary>
         /// Decrypts data.
         /// </summary>

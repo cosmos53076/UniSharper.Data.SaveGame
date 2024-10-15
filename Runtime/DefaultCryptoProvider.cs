@@ -5,15 +5,10 @@ using ReSharp.Security.Cryptography;
 
 namespace UniSharper.Data.SaveGame
 {
-    /// <summary>
-    /// The default encryption provider for <see cref="UniSharper.Data.SaveGame.ISaveGameManager"/>.
-    /// Implements the <see cref="ISaveGameDataCryptoProvider"/>
-    /// </summary>
-    /// <seealso cref="ISaveGameDataCryptoProvider"/>
-    public class SaveGameDataCryptoProvider : ISaveGameDataCryptoProvider
+    internal class DefaultCryptoProvider : ICryptoProvider
     {
         public byte[] Encrypt(byte[] data, byte[] key) => CryptoUtility.AesEncrypt(data, key);
-        
+
         public byte[] Decrypt(byte[] data, byte[] key) => CryptoUtility.AesDecrypt(data, key);
     }
 }

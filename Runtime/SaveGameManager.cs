@@ -27,21 +27,21 @@ namespace UniSharper.Data.SaveGame
         private static readonly string RuntimeDefaultStorePath = PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(Application.persistentDataPath, "saves"));
 
         private Dictionary<string, FileStream> fileStreamMap;
-        
-        public string StorePath { get; private set; }
-        
-        public ISaveGameDataCryptoProvider SaveGameDataCryptoProvider { get; private set; }
 
-        public virtual void Initialize(string storePath = null, ISaveGameDataCryptoProvider cryptoProvider = null)
+        public string StorePath { get; private set; }
+
+        public ICryptoProvider CryptoProvider { get; private set; }
+
+        public ICompressionProvider CompressionProvider { get; private set; }
+
+        public virtual void Initialize(string storePath = null, ICryptoProvider cryptoProvider = null, ICompressionProvider compressionProvider = null)
         {
             fileStreamMap = new Dictionary<string, FileStream>();
-            
-            StorePath = !string.IsNullOrEmpty(storePath) ? storePath :
-                PlayerEnvironment.IsEditorPlatform ? EditorDefaultStorePath : RuntimeDefaultStorePath;
-
-            SaveGameDataCryptoProvider = cryptoProvider ?? new SaveGameDataCryptoProvider();
+            StorePath = !string.IsNullOrEmpty(storePath) ? storePath : PlayerEnvironment.IsEditorPlatform ? EditorDefaultStorePath : RuntimeDefaultStorePath;
+            CryptoProvider = cryptoProvider ?? new DefaultCryptoProvider();
+            CompressionProvider = compressionProvider ?? new DefaultCompressionProvider();
         }
-        
+
         public virtual string GetFilePath(string name, bool autoCreateFolder = false)
         {
             try
@@ -50,7 +50,7 @@ namespace UniSharper.Data.SaveGame
                 {
                     Directory.CreateDirectory(StorePath);
                 }
-                
+
                 return PathUtility.UnifyToAltDirectorySeparatorChar(Path.Combine(StorePath, $"{name}.sav"));
             }
             catch (Exception e)
@@ -59,20 +59,20 @@ namespace UniSharper.Data.SaveGame
                 return null;
             }
         }
-        
+
         public virtual bool ExistsSaveData(string name)
         {
             var filePath = GetFilePath(name);
             return File.Exists(filePath);
         }
-        
+
         public virtual bool TryLoadGame(string name, out string data)
         {
             var result = TryLoadGameData(name, out var rawData);
             data = result && rawData != null ? DefaultEncoding.GetString(rawData) : null;
             return result;
         }
-        
+
         public virtual bool TryLoadGameData(string name, out byte[] data)
         {
             if (ExistsSaveData(name))
@@ -84,13 +84,13 @@ namespace UniSharper.Data.SaveGame
             data = null;
             return false;
         }
-        
+
         public virtual string LoadGame(string name)
         {
             var gameData = LoadGameData(name);
             return gameData == null ? null : DefaultEncoding.GetString(gameData);
         }
-        
+
         public virtual byte[] LoadGameData(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -107,7 +107,7 @@ namespace UniSharper.Data.SaveGame
                 fileStream?.Dispose();
                 fileStreamMap.Remove(name);
             }
-                
+
             byte[] fileData;
 
             try
@@ -122,30 +122,46 @@ namespace UniSharper.Data.SaveGame
 
             using (var reader = new BinaryReader(new MemoryStream(fileData)))
             {
-                var dataEncryptionFlagRawData = reader.ReadBytes(1);
-                var dataEncryptionFlag = BitConverter.ToBoolean(dataEncryptionFlagRawData, 0);
+                var encryptionFlagRawData = reader.ReadBytes(1);
+                var encryptionFlag = BitConverter.ToBoolean(encryptionFlagRawData, 0);
 
-                // No data encryption.
-                if (!dataEncryptionFlag)
-                    return reader.ReadBytes(fileData.Length - dataEncryptionFlagRawData.Length);
-
-                // Need data decryption.
-                var key = reader.ReadBytes(EncryptionKeyLength);
-                var cipherData = reader.ReadBytes(fileData.Length - dataEncryptionFlagRawData.Length - EncryptionKeyLength);
-                return SaveGameDataCryptoProvider?.Decrypt(cipherData, key);
+                if (encryptionFlag)
+                {
+                    // Need to decrypt data.
+                    var key = reader.ReadBytes(EncryptionKeyLength);
+                    var compressionFlagRawData = reader.ReadBytes(1);
+                    var compressionFlag = BitConverter.ToBoolean(compressionFlagRawData, 0);
+                    var cipherData = reader.ReadBytes(fileData.Length - encryptionFlagRawData.Length - EncryptionKeyLength - compressionFlagRawData.Length);
+                    var data = CryptoProvider.Decrypt(cipherData, key);
+                    return compressionFlag ? CompressionProvider.Decompress(data) : data;
+                }
+                else
+                {
+                    // No need to decrypt data.
+                    var compressionFlagRawData = reader.ReadBytes(1);
+                    var compressionFlag = BitConverter.ToBoolean(compressionFlagRawData, 0);
+                    var data = reader.ReadBytes(fileData.Length - encryptionFlagRawData.Length - compressionFlagRawData.Length);
+                    return compressionFlag ? CompressionProvider.Decompress(data) : data;
+                }
             }
         }
-        
-        public virtual void SaveGame(string name, string data, bool encrypt = true)
+
+        public virtual bool SaveGame(string name,
+            string data,
+            bool encrypt = true,
+            bool compress = false)
         {
             var rawData = DefaultEncoding.GetBytes(data);
-            SaveGameData(name, rawData, encrypt);
+            return SaveGameData(name, rawData, encrypt, compress);
         }
-        
-        public virtual void SaveGameData(string name, byte[] data, bool encrypt = true)
+
+        public virtual bool SaveGameData(string name,
+            byte[] data,
+            bool encrypt = true,
+            bool compress = false)
         {
             if (string.IsNullOrEmpty(name) || data == null)
-                return;
+                return false;
 
             try
             {
@@ -158,36 +174,43 @@ namespace UniSharper.Data.SaveGame
                 }
 
                 fileStream.Seek(0, SeekOrigin.Begin);
-            
-                var dataEncryptionFlag = BitConverter.GetBytes(encrypt);
+                
+                var encryptionFlag = BitConverter.GetBytes(encrypt);
+                var compressionFlag = BitConverter.GetBytes(compress);
 
                 if (encrypt)
                 {
                     var key = CryptoUtility.GenerateRandomKey(EncryptionKeyLength);
-                    var cipherData = SaveGameDataCryptoProvider.Encrypt(data, key);
-                    fileStream.SetLength(dataEncryptionFlag.Length + key.Length + cipherData.Length);
-                    fileStream.Write(dataEncryptionFlag, 0, dataEncryptionFlag.Length);
+                    var output = compress ? CompressionProvider.Compress(data) : data;
+                    var cipherData = CryptoProvider.Encrypt(output, key);
+                    fileStream.SetLength(encryptionFlag.Length + key.Length + compressionFlag.Length + cipherData.Length);
+                    fileStream.Write(encryptionFlag, 0, encryptionFlag.Length);
                     fileStream.Write(key, 0, key.Length);
+                    fileStream.Write(compressionFlag, 0, compressionFlag.Length);
                     fileStream.Write(cipherData, 0, cipherData.Length);
                 }
                 else
                 {
-                    fileStream.SetLength(dataEncryptionFlag.Length + data.Length);
-                    fileStream.Write(dataEncryptionFlag, 0, dataEncryptionFlag.Length);
-                    fileStream.Write(data, 0, data.Length);
+                    var output = compress ? CompressionProvider.Compress(data) : data;
+                    fileStream.SetLength(encryptionFlag.Length + compressionFlag.Length + output.Length);
+                    fileStream.Write(encryptionFlag, 0, encryptionFlag.Length);
+                    fileStream.Write(compressionFlag, 0, compressionFlag.Length);
+                    fileStream.Write(output, 0, output.Length);
                 }
-                
+
                 fileStream.Flush(true);
+                return true;
             }
             catch (Exception e)
             {
                 Debug.LogWarning($"Save game data failed, exception: {e}");
+                return false;
             }
         }
-        
+
         public virtual void DeleteSaveData(string name)
         {
-            if (!ExistsSaveData(name)) 
+            if (!ExistsSaveData(name))
                 return;
 
             try
@@ -199,7 +222,7 @@ namespace UniSharper.Data.SaveGame
                 Debug.LogWarning($"Can not delete save data, exception: {e}");
             }
         }
-        
+
         public virtual void Dispose()
         {
             if (fileStreamMap == null)

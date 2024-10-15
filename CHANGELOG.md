@@ -6,6 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [4.0.0] - 2024-10-15
+
+### Added
+
+- Adds interface **ICompressionProvider**.
+- Adds class **DefaultCompressionProvider**.
+
+
+
+### Changed
+
+- Rename interface **ISaveGameDataCryptoProvider** as **ICryptoProvider**.
+- Rename class **SaveGameDataCryptoProvider** as **DefaultCryptoProvider**.
+
+
+
 ## [3.0.1] - 2024-07-02
 
 ### Fixed
