@@ -5,8 +5,6 @@ namespace UniSharper.Data.SaveGame.Samples
 {
     public class SaveGameSample : MonoBehaviour
     {
-        #region Fields
-
         private const string GameDataName = "SaveGameExample";
 
         private const string Key = "SAnzX2EoRV9Haaqc";
@@ -19,10 +17,6 @@ namespace UniSharper.Data.SaveGame.Samples
 
         private ISaveGameManager manager;
 
-        #endregion Fields
-
-        #region Methods
-
         public void OnLoadGameButtonClicked()
         {
             LoadGame();
@@ -32,15 +26,16 @@ namespace UniSharper.Data.SaveGame.Samples
         {
             if (!string.IsNullOrEmpty(inputFiled.text))
             {
-                manager.SaveGame(GameDataName, inputFiled.text);
+                var success = manager.SaveGame(GameDataName, inputFiled.text, true, true);
                 inputFiled.text = string.Empty;
+                loadGameButton.interactable = success;
             }
         }
 
         private void Awake()
         {
             manager = new SaveGameManager();
-            manager.Initialize(null, new SaveGameDataCryptoProvider());
+            manager.Initialize();
             loadGameButton.interactable = manager.ExistsSaveData(GameDataName);
         }
 
@@ -52,7 +47,5 @@ namespace UniSharper.Data.SaveGame.Samples
 
             inputFiled.text = content;
         }
-
-        #endregion Methods
     }
 }
