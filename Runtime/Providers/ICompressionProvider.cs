@@ -1,7 +1,7 @@
 // Copyright (c) Jerry Lee. All rights reserved. Licensed under the MIT License.
 // See LICENSE in the project root for license information.
 
-namespace UniSharper.Data.SaveGame
+namespace UniSharper.Data.SaveGame.Providers
 {
     /// <summary>
     /// Provides the methods for save game data compression and decompression.

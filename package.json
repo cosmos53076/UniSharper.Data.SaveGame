@@ -2,7 +2,7 @@
   "name": "io.github.idreamsofgame.unisharper.data.savegame",
   "displayName": "UniSharper.Data.SaveGame",
   "description": "UniSharper.Data.SaveGame is a save game system for saving and loading game data in Unity Engine.",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "unity": "2019.4",
   "author": {
     "name": "iDreamsOfGame",
@@ -10,7 +10,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "io.github.idreamsofgame.unisharper.core": "1.24.4"
+    "io.github.idreamsofgame.unisharper.core": "1.24.5"
   },
   "publishConfig": {
     "registry": "https://package.openupm.com"

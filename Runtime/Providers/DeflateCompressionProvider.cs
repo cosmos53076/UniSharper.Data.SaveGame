@@ -3,12 +3,12 @@
 
 using ReSharp.Compression;
 
-namespace UniSharper.Data.SaveGame
+namespace UniSharper.Data.SaveGame.Providers
 {
     /// <summary>
-    /// Default implementation of <see cref="ICompressionProvider"/>.
+    /// Deflate algorithm implementation of <see cref="ICompressionProvider"/>.
     /// </summary>
-    public class DefaultCompressionProvider : ICompressionProvider
+    public class DeflateCompressionProvider : ICompressionProvider
     {
         public byte[] Compress(byte[] input) => Deflate.Compress(input);
 

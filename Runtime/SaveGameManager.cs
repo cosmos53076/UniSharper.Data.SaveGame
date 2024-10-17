@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using ReSharp.Extensions;
 using ReSharp.Security.Cryptography;
+using UniSharper.Data.SaveGame.Providers;
 using UnityEngine;
 
 // ReSharper disable RedundantArgumentDefaultValue
@@ -38,8 +39,8 @@ namespace UniSharper.Data.SaveGame
         {
             fileStreamMap = new Dictionary<string, FileStream>();
             StorePath = !string.IsNullOrEmpty(storePath) ? storePath : PlayerEnvironment.IsEditorPlatform ? EditorDefaultStorePath : RuntimeDefaultStorePath;
-            CryptoProvider = cryptoProvider ?? new DefaultCryptoProvider();
-            CompressionProvider = compressionProvider ?? new DefaultCompressionProvider();
+            CryptoProvider = cryptoProvider ?? new AesCryptoProvider();
+            CompressionProvider = compressionProvider ?? new DeflateCompressionProvider();
         }
 
         public virtual string GetFilePath(string name, bool autoCreateFolder = false)

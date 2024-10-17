@@ -3,12 +3,12 @@
 
 using ReSharp.Security.Cryptography;
 
-namespace UniSharper.Data.SaveGame
+namespace UniSharper.Data.SaveGame.Providers
 {
     /// <summary>
-    /// Default implementation of <see cref="ICryptoProvider"/>.
+    /// AES algorithm implementation of <see cref="ICryptoProvider"/>.
     /// </summary>
-    public class DefaultCryptoProvider : ICryptoProvider
+    public class AesCryptoProvider : ICryptoProvider
     {
         public byte[] Encrypt(byte[] data, byte[] key) => CryptoUtility.AesEncrypt(data, key);
 

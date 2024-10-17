@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [4.1.0] - 2024-10-17
+
+### Changed
+
+- Adds new namespace **UniSharper.Data.SaveGame.Providers** to hold all providers.
+- Rename class **DefaultCompressionProvider** to **DeflateCompressionProvider**.
+- Rename class **DefaultCryptoProvider** to **AesCryptoProvider**.
+
+
+
 ## [4.0.0] - 2024-10-15
 
 ### Added
