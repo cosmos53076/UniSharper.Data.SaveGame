@@ -121,29 +121,37 @@ namespace UniSharper.Data.SaveGame
                 return null;
             }
 
-            using (var reader = new BinaryReader(new MemoryStream(fileData)))
+            try
             {
-                var encryptionFlagRawData = reader.ReadBytes(1);
-                var encryptionFlag = BitConverter.ToBoolean(encryptionFlagRawData, 0);
+                using (var reader = new BinaryReader(new MemoryStream(fileData)))
+                {
+                    var encryptionFlagRawData = reader.ReadBytes(1);
+                    var encryptionFlag = BitConverter.ToBoolean(encryptionFlagRawData, 0);
 
-                if (encryptionFlag)
-                {
-                    // Need to decrypt data.
-                    var key = reader.ReadBytes(EncryptionKeyLength);
-                    var compressionFlagRawData = reader.ReadBytes(1);
-                    var compressionFlag = BitConverter.ToBoolean(compressionFlagRawData, 0);
-                    var cipherData = reader.ReadBytes(fileData.Length - encryptionFlagRawData.Length - EncryptionKeyLength - compressionFlagRawData.Length);
-                    var data = CryptoProvider.Decrypt(cipherData, key);
-                    return compressionFlag ? CompressionProvider.Decompress(data) : data;
+                    if (encryptionFlag)
+                    {
+                        // Need to decrypt data.
+                        var key = reader.ReadBytes(EncryptionKeyLength);
+                        var compressionFlagRawData = reader.ReadBytes(1);
+                        var compressionFlag = BitConverter.ToBoolean(compressionFlagRawData, 0);
+                        var cipherData = reader.ReadBytes(fileData.Length - encryptionFlagRawData.Length - EncryptionKeyLength - compressionFlagRawData.Length);
+                        var data = CryptoProvider.Decrypt(cipherData, key);
+                        return compressionFlag ? CompressionProvider.Decompress(data) : data;
+                    }
+                    else
+                    {
+                        // No need to decrypt data.
+                        var compressionFlagRawData = reader.ReadBytes(1);
+                        var compressionFlag = BitConverter.ToBoolean(compressionFlagRawData, 0);
+                        var data = reader.ReadBytes(fileData.Length - encryptionFlagRawData.Length - compressionFlagRawData.Length);
+                        return compressionFlag ? CompressionProvider.Decompress(data) : data;
+                    }
                 }
-                else
-                {
-                    // No need to decrypt data.
-                    var compressionFlagRawData = reader.ReadBytes(1);
-                    var compressionFlag = BitConverter.ToBoolean(compressionFlagRawData, 0);
-                    var data = reader.ReadBytes(fileData.Length - encryptionFlagRawData.Length - compressionFlagRawData.Length);
-                    return compressionFlag ? CompressionProvider.Decompress(data) : data;
-                }
+            }
+            catch (Exception)
+            {
+                // Try to load data from old version.
+                return LoadOldVersionGameData(fileData);
             }
         }
 
@@ -235,6 +243,30 @@ namespace UniSharper.Data.SaveGame
             }
 
             fileStreamMap = null;
+        }
+        
+        private byte[] LoadOldVersionGameData(byte[] fileData)
+        {
+            try
+            {
+                using (var reader = new BinaryReader(new MemoryStream(fileData)))
+                {
+                    var encryptionFlagRawData = reader.ReadBytes(1);
+                    var encryptionFlag = BitConverter.ToBoolean(encryptionFlagRawData, 0);
+                    if (!encryptionFlag) 
+                        return reader.ReadBytes(fileData.Length - encryptionFlagRawData.Length);
+                    
+                    // Need to decrypt data.
+                    var key = reader.ReadBytes(EncryptionKeyLength);
+                    var cipherData = reader.ReadBytes(fileData.Length - encryptionFlagRawData.Length - EncryptionKeyLength);
+                    return CryptoProvider.Decrypt(cipherData, key);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning(e.ToString());
+                return null;
+            }
         }
     }
 }
