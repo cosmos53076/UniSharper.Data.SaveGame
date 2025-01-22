@@ -38,7 +38,11 @@ namespace UniSharper.Data.SaveGame
         public virtual void Initialize(string storePath = null, ICryptoProvider cryptoProvider = null, ICompressionProvider compressionProvider = null)
         {
             fileStreamMap = new Dictionary<string, FileStream>();
-            StorePath = !string.IsNullOrEmpty(storePath) ? storePath : PlayerEnvironment.IsEditorPlatform ? EditorDefaultStorePath : RuntimeDefaultStorePath;
+            StorePath = !string.IsNullOrEmpty(storePath) 
+                ? storePath 
+                : Application.isEditor 
+                    ? EditorDefaultStorePath
+                    : RuntimeDefaultStorePath;
             CryptoProvider = cryptoProvider ?? new AesCryptoProvider();
             CompressionProvider = compressionProvider ?? new DeflateCompressionProvider();
         }
